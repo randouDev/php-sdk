@@ -1,5 +1,19 @@
 # 燃豆积分俱乐部 SDK for PHP
 
+## Requirements
+
+```
+"php": ">=7.0"
+```
+
+## Installation
+
+### Composer
+
+```bash
+composer require randou/mall-sdk-php
+```
+
 ## Issues
 
 [Opening an Issue](https://github.com/randouDev/php-sdk/issues/new), Issues not conforming to the guidelines may be
