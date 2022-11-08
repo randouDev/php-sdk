@@ -1,0 +1,22 @@
+{
+  "name": "randou/mall-sdk-php",
+  "description": "randou mall SDK for PHP",
+  "homepage": "https://randou-tech.com",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "randou-dev",
+      "homepage": "https://randou-tech.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Randou\\": "src/Randou"
+    }
+  },
+  "require": {
+    "php": ">=7.0",
+    "ext-json": "*"
+  }
+}
