@@ -210,7 +210,8 @@ class RdClient
      */
     private function send(string $uri, array $params): ResponseCore
     {
-        $url = sprintf("%s%s?%s", $this->debug ? $this->base_url_debug : $this->base_url, $uri, http_build_query($params));
+//        $url = sprintf("%s%s?%s", $this->debug ? $this->base_url_debug : $this->base_url, $uri, http_build_query($params));
+        $url = sprintf("%s%s?%s", $this->base_url, $uri, http_build_query($params));
         $request = new RequestCore($url);
         $request->set_useragent($this->generateUserAgent());
         $request->timeout = $this->options->getTimeout();
