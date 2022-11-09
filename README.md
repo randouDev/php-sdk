@@ -25,7 +25,7 @@ Detailed changes for each release are documented in the [release notes](./Change
 
 ## References
 
-* [Latest Release](https://github.com/randouDev/php-sdk)
+* [Latest Release](https://github.com/randouDev/php-sdk/releases)
 
 ## License
 
