@@ -23,11 +23,13 @@ class WithHoldingEvent extends Event
         $this->data['created_at'] = $this->origin['created_at'];
         $this->data['type'] = $this->origin['type'];
         $this->data['description'] = $this->origin['description'];
-        $this->data['subsidy_fee'] = intval($this->origin['subsidy_fee']);
+//        $this->data['subsidy_fee'] = intval($this->origin['subsidy_fee']);
         $this->data['ip'] = $this->origin['ip'];
 
         if ($this->data['type'] === RdConstant::WITHHOLDING_TYPE_REDEEM) {
             $this->data['redeem_detail'] = \json_decode($this->origin['redeem_detail'], true);
+        } elseif ($this->data['type'] === RdConstant::WITHHOLDING_TYPE_DRAWINGGAME) {
+            $this->data['drawinggame_detail'] = \json_decode($this->origin['drawinggame_detail'], true);
         }
     }
 }
