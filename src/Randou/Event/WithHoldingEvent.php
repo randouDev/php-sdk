@@ -30,6 +30,8 @@ class WithHoldingEvent extends Event
             $this->data['redeem_detail'] = \json_decode($this->origin['redeem_detail'], true);
         } elseif ($this->data['type'] === RdConstant::WITHHOLDING_TYPE_DRAWINGGAME) {
             $this->data['drawinggame_detail'] = \json_decode($this->origin['drawinggame_detail'], true);
+        } elseif ($this->data['type'] === RdConstant::WITHHOLDING_TYPE_LINKGAME) {
+            $this->data['linkgame_detail'] = \json_decode($this->origin['linkgame_detail'], true);
         }
     }
 }

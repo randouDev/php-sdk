@@ -20,7 +20,7 @@ use Randou\Verification\Verification;
 class RdClient
 {
     const GUEST = 'guest';
-    const VERSION = '1.0.0';
+    const VERSION = '1.1.1';
     const URI_VERSION = 'v1';
 
     /**
@@ -128,7 +128,7 @@ class RdClient
         if (!is_array($options)) {
             throw new RdException('invalid params, options has to be an array!');
         }
-        if (empty($options['uid']) || empty($options['mall_no']) || empty($options['credits'])) {
+        if (empty($options['uid']) || empty($options['mall_no']) || !isset($options['credits'])) {
             throw new RdException('invalid params, there is no needed key');
         }
         $params = array(
