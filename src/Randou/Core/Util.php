@@ -53,9 +53,9 @@ class Util
         ksort($params);
         $str = '';
         foreach ($params as $k => $val) {
-            if (!empty($val)) {
-                $str .= $k . '=' . $val . '&';
-            }
+//            if (!empty($val)) {
+            $str .= $k . '=' . $val . '&';
+//            }
         }
         return trim($str, '&');
     }

@@ -5,17 +5,24 @@ namespace Randou\Exception;
 
 class RdException extends \Exception
 {
+    /** The error message */
+    protected $message = 'unknown error';
+
+    /** The error code */
+    protected $code = 9999;
+
     private $details = array();
 
     function __construct($details)
     {
         if (is_array($details)) {
-            $message = $details['code'] . ': ' . $details['error'];
-            parent::__construct($message);
+//            $message = $details['code'] . ': ' . $details['error'];
+//            parent::__construct($message);
+            parent::__construct($details['error'], $details['code']);
             $this->details = $details;
         } else {
-            $message = $details;
-            parent::__construct($message);
+//            $message = $details;
+            parent::__construct($details);
         }
     }
 

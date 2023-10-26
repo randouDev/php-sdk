@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Randou\Event;
 
-use Randou\Constant\RdConstant;
+//use Randou\Constant\RdConstant;
 
 class CreditsNotifyEvent extends Event
 {

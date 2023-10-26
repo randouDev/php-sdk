@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Randou;
 
+use Randou\Constant\OrderReviewConstants;
 use Randou\Core\Util;
 use Randou\Event\CreditsIssueEvent;
 use Randou\Event\CreditsNotifyEvent;
@@ -12,6 +13,7 @@ use Randou\Http\RequestCore;
 use Randou\Http\RequestCore_Exception;
 use Randou\Http\ResponseCore;
 use Randou\Result\FetchMallUrlResult;
+use Randou\Result\OrderResult;
 use Randou\Verification\Verification;
 
 /**
@@ -20,7 +22,7 @@ use Randou\Verification\Verification;
 class RdClient
 {
     const GUEST = 'guest';
-    const VERSION = '1.1.1';
+    const VERSION = '1.2.0';
     const URI_VERSION = 'v1';
 
     /**
@@ -132,21 +134,146 @@ class RdClient
             throw new RdException('invalid params, there is no needed key');
         }
         $params = array(
-            'uid'       => trim($options['uid']),
-            'mall_no'   => trim($options['mall_no']),
-            'credits'   => (int)$options['credits'],
-            'grade'     => empty($options['grade']) ? 1 : (int)$options['grade'],
-            'redirect'  => empty($options['redirect']) ? '/' : $options['redirect'],
-            'nonce_str' => Util::random(),
-            'timestamp' => time(),
-            'appid'     => $this->rdKeys->getAppid(),
+            'uid'      => trim($options['uid']),
+            'mall_no'  => trim($options['mall_no']),
+            'credits'  => (int)$options['credits'],
+            'grade'    => empty($options['grade']) ? 1 : (int)$options['grade'],
+            'redirect' => empty($options['redirect']) ? '/' : $options['redirect'],
+//            'nonce_str' => Util::random(),
+//            'timestamp' => time(),
+//            'appid'     => $this->rdKeys->getAppid(),
         );
+        $params = array_merge($params, $this->getCommonParams());
 
         $params['sign'] = Util::sign($params, $this->rdKeys->getAppsecret());
 
         $response = $this->send(sprintf("/%s%s", self::URI_VERSION, '/autoLogin'), $params);
         return new FetchMallUrlResult($response);
     }
+
+    /**
+     * common params
+     * @return array
+     */
+    private function getCommonParams(): array
+    {
+        return array(
+            'nonce_str' => Util::random(),
+            'timestamp' => time(),
+            'appid'     => $this->rdKeys->getAppid(),
+        );
+    }
+
+    /**
+     * order review
+     *
+     * @param $options
+     * @return OrderResult
+     * @throws RdException
+     */
+    public function review($options): OrderResult
+    {
+        if (!is_array($options)) {
+            throw new RdException('invalid params, options has to be an array!');
+        }
+        if (empty($options['pass']) && !in_array($options, [OrderReviewConstants::PASS, OrderReviewConstants::UNPASS])) {
+            throw new RdException('invalid pass');
+        }
+        if (empty($options['orderNo']) && empty($options['bizNo'])) {
+            throw new RdException('invalid params, order is empty');
+        }
+
+        $params = array('pass' => (int)$options['pass']);
+        if (!empty($options['orderNo'])) {
+            $params['orderNo'] = $options['orderNo'];
+        }
+        if (!empty($options['bizNo'])) {
+            $params['bizNo'] = $options['bizNo'];
+        }
+        if (OrderReviewConstants::UNPASS === (int)$options['pass']) {
+            if (isset($options['reason_type'])) {
+                $params['reason_type'] = (int)$options['reason_type'];
+            }
+            if (isset($options['reason_display'])) {
+                $params['reason_display'] = (int)$options['reason_display'];
+            }
+            if (!empty($options['reason_detail'])) {
+                $params['reason_detail'] = $options['reason_detail'];
+            }
+        }
+        $params = array_merge($params, $this->getCommonParams());
+        $params['sign'] = Util::sign($params, $this->rdKeys->getAppsecret());
+
+        $response = $this->send(sprintf("/%s%s", self::URI_VERSION, '/order/review'), $params);
+        return new OrderResult($response);
+    }
+
+
+    /**
+     * order review
+     *
+     * @param $options
+     * @return OrderResult
+     * @throws RdException
+     */
+    public function shipping($options): OrderResult
+    {
+        if (!is_array($options)) {
+            throw new RdException('invalid params, options has to be an array!');
+        }
+        if (empty($options['shipping_company']) || empty($options['shipping_no'])) {
+            throw new RdException('invalid params, no shipping info');
+        }
+        if (empty($options['orderNo']) && empty($options['bizNo'])) {
+            throw new RdException('invalid params, order is empty');
+        }
+
+        $params = array('shipping_company' => $options['shipping_company'], 'shipping_no' => $options['shipping_no']);
+        if (!empty($options['orderNo'])) {
+            $params['orderNo'] = $options['orderNo'];
+        }
+        if (!empty($options['bizNo'])) {
+            $params['bizNo'] = $options['bizNo'];
+        }
+
+        $params = array_merge($params, $this->getCommonParams());
+        $params['sign'] = Util::sign($params, $this->rdKeys->getAppsecret());
+
+        $response = $this->send(sprintf("/%s%s", self::URI_VERSION, '/order/shipping'), $params);
+        return new OrderResult($response);
+    }
+
+    /**
+     * cancel order shipping
+     *
+     * @param $options
+     * @return OrderResult
+     * @throws RdException
+     */
+    public function shippingCancel($options): OrderResult
+    {
+        if (!is_array($options)) {
+            throw new RdException('invalid params, options has to be an array!');
+        }
+        if (empty($options['orderNo']) && empty($options['bizNo'])) {
+            throw new RdException('invalid params, order is empty');
+        }
+
+        $params = array();
+        if (!empty($options['orderNo'])) {
+            $params['orderNo'] = $options['orderNo'];
+        }
+        if (!empty($options['bizNo'])) {
+            $params['bizNo'] = $options['bizNo'];
+        }
+
+        $params = array_merge($params, $this->getCommonParams());
+        $params['sign'] = Util::sign($params, $this->rdKeys->getAppsecret());
+
+        $response = $this->send(sprintf("/%s%s", self::URI_VERSION, '/order/cancel-shipping'), $params);
+        return new OrderResult($response);
+    }
+
 
     /**
      * 积分预扣校验
