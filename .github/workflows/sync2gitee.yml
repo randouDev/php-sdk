@@ -1,0 +1,16 @@
+# 通过 Github actions， 在 Github 仓库的每一次 commit 后自动同步到 Gitee 上
+name: sync2gitee
+on:
+  push: # 声明监听的是push 事件
+    branches:
+      - master # 声明了只对main分支生效
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wearerequired/git-mirror-action@master #开源actions包
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.GITEE_SYNC_WSL_IDRSA_PRIVATE}} # SYNCGITEEPRIVATEKEY 是在该仓库setting设置的私钥名称
+        with:
+          source-repo: 'git@github.com:randouDev/php-sdk.git' # github仓库地址
+          destination-repo: 'git@gitee.com:randouDev/php-sdk.git' # gitee仓库地址
