@@ -7,6 +7,9 @@ use Randou\Constant\OrderReviewConstants;
 use Randou\Core\Util;
 use Randou\Event\CreditsIssueEvent;
 use Randou\Event\CreditsNotifyEvent;
+use Randou\Event\GoodsChargeEvent;
+use Randou\Event\GoodsChargeQueryEvent;
+use Randou\Event\QueryCreditsListEvent;
 use Randou\Event\WithHoldingEvent;
 use Randou\Exception\RdException;
 use Randou\Http\RequestCore;
@@ -22,7 +25,7 @@ use Randou\Verification\Verification;
 class RdClient
 {
     const GUEST = 'guest';
-    const VERSION = '1.2.0';
+    const VERSION = '1.3.0';
     const URI_VERSION = 'v1';
 
     /**
@@ -362,4 +365,55 @@ class RdClient
         return "Randou PHP SDK/" . self::VERSION . " (" . php_uname('s') . "/" . php_uname('r') . "/" . php_uname('m') . ";" . \phpversion() . ")";
     }
 
+    /**
+     * 充值事件
+     *
+     * @param array $params
+     * @return GoodsChargeEvent
+     * @throws RdException
+     */
+    public function charge(array $params): GoodsChargeEvent
+    {
+        $message = $this->getVerification()->verify($params);
+        if (!$message->success()) {
+            throw new RdException('verified failed');
+        }
+
+        return new GoodsChargeEvent($params);
+    }
+
+    /**
+     * 充值查询事件
+     *
+     * @param array $params
+     * @return GoodsChargeQueryEvent
+     * @throws RdException
+     */
+    public function chargeQuery(array $params): GoodsChargeQueryEvent
+    {
+        $message = $this->getVerification()->verify($params);
+        if (!$message->success()) {
+            throw new RdException('verified failed');
+        }
+
+        return new GoodsChargeQueryEvent($params);
+    }
+
+
+    /**
+     * 充值查询事件
+     *
+     * @param array $params
+     * @return QueryCreditsListEvent
+     * @throws RdException
+     */
+    public function creditsList(array $params): QueryCreditsListEvent
+    {
+        $message = $this->getVerification()->verify($params);
+        if (!$message->success()) {
+            throw new RdException('verified failed');
+        }
+
+        return new QueryCreditsListEvent($params);
+    }
 }
