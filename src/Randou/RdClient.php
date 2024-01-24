@@ -25,7 +25,7 @@ use Randou\Verification\Verification;
 class RdClient
 {
     const GUEST = 'guest';
-    const VERSION = '1.3.0';
+    const VERSION = '1.3.1';
     const URI_VERSION = 'v1';
 
     /**
@@ -48,6 +48,16 @@ class RdClient
     private $base_url = 'https://openapi.randou-tech.com';
 
     /**
+     * @var string
+     */
+    private $base_url_debug = 'https://openapi.sandbox.randou-tech.cn';
+
+    /**
+     * @var bool
+     */
+    private $debug = false;
+
+    /**
      * @param RdKeys $rdKeys
      * @param Options $options
      * @throws RdException
@@ -57,6 +67,16 @@ class RdClient
         $this->rdKeys = $rdKeys;
         $this->options = $options;
         self::checkEnv();
+    }
+
+    /**
+     * @param bool $debug
+     * @return $this
+     */
+    public function setDebug(bool $debug): RdClient
+    {
+        $this->debug = $debug;
+        return $this;
     }
 
     /**
@@ -111,15 +131,6 @@ class RdClient
             throw new RdException('Function get_loaded_extensions has been disabled, please check php config.');
         }
     }
-
-//    /**
-//     * @param $debug
-//     * @return void
-//     */
-//    public function setDebug($debug)
-//    {
-//        $this->debug = $debug;
-//    }
 
     /**
      * Fetch mall login url
@@ -340,8 +351,7 @@ class RdClient
      */
     private function send(string $uri, array $params): ResponseCore
     {
-//        $url = sprintf("%s%s?%s", $this->debug ? $this->base_url_debug : $this->base_url, $uri, http_build_query($params));
-        $url = sprintf("%s%s?%s", $this->base_url, $uri, http_build_query($params));
+        $url = sprintf("%s%s?%s", $this->debug ? $this->base_url_debug : $this->base_url, $uri, http_build_query($params));
         $request = new RequestCore($url);
         $request->set_useragent($this->generateUserAgent());
         $request->timeout = $this->options->getTimeout();
