@@ -7,6 +7,7 @@ use Randou\Constant\OrderReviewConstants;
 use Randou\Core\Util;
 use Randou\Event\CreditsIssueEvent;
 use Randou\Event\CreditsNotifyEvent;
+use Randou\Event\DrawingPrizeEvent;
 use Randou\Event\GoodsChargeEvent;
 use Randou\Event\GoodsChargeQueryEvent;
 use Randou\Event\QueryCreditsListEvent;
@@ -25,7 +26,7 @@ use Randou\Verification\Verification;
 class RdClient
 {
     const GUEST = 'guest';
-    const VERSION = '1.3.1';
+    const VERSION = '1.3.2';
     const URI_VERSION = 'v1';
 
     /**
@@ -425,5 +426,22 @@ class RdClient
         }
 
         return new QueryCreditsListEvent($params);
+    }
+
+    /**
+     * 抽奖记录消息订阅
+     *
+     * @param array $params
+     * @return DrawingPrizeEvent
+     * @throws RdException
+     */
+    public function drawingGameSubscription(array $params): DrawingPrizeEvent
+    {
+        $message = $this->getVerification()->verify($params);
+        if (!$message->success()) {
+            throw new RdException('verified failed');
+        }
+
+        return new DrawingPrizeEvent($params);
     }
 }
